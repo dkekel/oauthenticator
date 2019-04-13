@@ -1,0 +1,27 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.4.RELEASE'
+	id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'ch.meyrin.lakeflower'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile group: 'org.webjars.npm', name: 'bulma', version: '0.7.4'
+	compile group: 'org.webjars', name: 'webjars-locator', version: '0.36'
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.1.4.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+}
