@@ -12,6 +12,9 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
@@ -21,6 +24,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Value("${security.oauth2.client.client-secret}")
     private transient String clientSecret;
+
+    @Value("${security.oauth2.client.redirect-uri}")
+    private transient String redirectUri;
 
     private final transient PasswordEncoder passwordEncoder;
     private final transient AuthenticationManager authenticationManager;
@@ -42,10 +48,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .inMemory()
                 .withClient(clientId)
                 .secret(passwordEncoder.encode(clientSecret))
-                .scopes("read")
-                .authorizedGrantTypes("authorization_code", "password")
+                .scopes("read,write")
+                .authorizedGrantTypes("authorization_code")
                 .autoApprove(true)
-                .redirectUris("http://localhost:8081/user/login/client-app");
+                .redirectUris(redirectUri);
     }
 
     @Override
@@ -54,5 +60,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .tokenEnhancer(tokenEnhancer())
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .authenticationManager(authenticationManager);
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security
+                .tokenKeyAccess("permitAll()")
+                .checkTokenAccess("isAuthenticated()");
     }
 }
