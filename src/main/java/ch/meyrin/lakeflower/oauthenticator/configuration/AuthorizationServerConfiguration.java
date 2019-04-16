@@ -25,17 +25,17 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Value("${security.oauth2.client.client-secret}")
     private transient String clientSecret;
 
+    @Value("${security.oauth2.client.redirect-uri}")
+    private transient String redirectUri;
+
     private final transient PasswordEncoder passwordEncoder;
     private final transient AuthenticationManager authenticationManager;
-    private final transient DataSource dataSource;
 
     @Autowired
     public AuthorizationServerConfiguration(final PasswordEncoder passwordEncoder,
-                                            final AuthenticationManager authenticationManager,
-                                            final DataSource dataSource) {
+                                            final AuthenticationManager authenticationManager) {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.dataSource = dataSource;
     }
 
     @Bean
@@ -45,8 +45,13 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
-                .jdbc(dataSource)
-                .passwordEncoder(passwordEncoder);
+                .inMemory()
+                .withClient(clientId)
+                .secret(passwordEncoder.encode(clientSecret))
+                .scopes("read,write")
+                .authorizedGrantTypes("authorization_code")
+                .autoApprove(true)
+                .redirectUris(redirectUri);
     }
 
     @Override
