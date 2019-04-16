@@ -1,0 +1,11 @@
+version: '3.1'
+services:
+  server:
+    build:
+      .
+    volumes:
+      - .:/home/gradle/src
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://192.168.1.103:5432/gridwars
+    ports:
+      - 8080:8080
