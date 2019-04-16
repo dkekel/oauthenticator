@@ -1,13 +1,17 @@
 package ch.meyrin.lakeflower.oauthenticator.configuration;
 
+import ch.meyrin.lakeflower.oauthenticator.configuration.security.OAuthTokenEnhancer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
 @Configuration
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
@@ -28,6 +32,11 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         this.authenticationManager = authenticationManager;
     }
 
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new OAuthTokenEnhancer();
+    }
+
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
                 .inMemory()
@@ -36,11 +45,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .scopes("read")
                 .authorizedGrantTypes("authorization_code", "password")
                 .autoApprove(true)
-                .redirectUris("http://localhost:8081/oauth/login/client-app");
+                .redirectUris("http://localhost:8081/user/login/client-app");
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager);
+        endpoints
+                .tokenEnhancer(tokenEnhancer())
+                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
+                .authenticationManager(authenticationManager);
     }
 }
