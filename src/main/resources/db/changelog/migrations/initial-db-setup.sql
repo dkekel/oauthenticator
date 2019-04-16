@@ -6,32 +6,19 @@ create table account
   email    varchar(255) not null
 );
 
-create table oauth_client
+CREATE TABLE oauth_client_details
 (
-  client_id     varchar(255) primary key,
-  client_secret varchar(255)  not null,
-  auto_approve  boolean default true,
-  redirect_uri  varchar(1000) not null
-);
-
-create table scope
-(
-  id        numeric primary key,
-  code      varchar(100) not null,
-  client_id varchar(255) not null,
-  CONSTRAINT scope_client_fk FOREIGN KEY (client_id)
-    REFERENCES oauth_client (client_id) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE CASCADE
-);
-
-create table grant_type
-(
-  id        numeric primary key,
-  code      varchar(100) not null,
-  client_id varchar(255) not null,
-  CONSTRAINT grant_type_client_fk FOREIGN KEY (client_id)
-    REFERENCES oauth_client (client_id) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE CASCADE
+  client_id               VARCHAR(256) PRIMARY KEY,
+  resource_ids            VARCHAR(256),
+  client_secret           VARCHAR(256),
+  scope                   VARCHAR(256),
+  authorized_grant_types  VARCHAR(256),
+  web_server_redirect_uri VARCHAR(256),
+  authorities             VARCHAR(256),
+  access_token_validity   INTEGER,
+  refresh_token_validity  INTEGER,
+  additional_information  VARCHAR(4096),
+  autoapprove             VARCHAR(256)
 );
 
 create table access_token
