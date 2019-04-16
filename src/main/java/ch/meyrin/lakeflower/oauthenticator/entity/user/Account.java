@@ -1,4 +1,4 @@
-package ch.meyrin.lakeflower.oauthenticator.entity;
+package ch.meyrin.lakeflower.oauthenticator.entity.user;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -12,6 +12,9 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
@@ -24,12 +27,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     private final transient PasswordEncoder passwordEncoder;
     private final transient AuthenticationManager authenticationManager;
+    private final transient DataSource dataSource;
 
     @Autowired
     public AuthorizationServerConfiguration(final PasswordEncoder passwordEncoder,
-                                            final AuthenticationManager authenticationManager) {
+                                            final AuthenticationManager authenticationManager,
+                                            final DataSource dataSource) {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.dataSource = dataSource;
     }
 
     @Bean
@@ -39,13 +45,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
-                .inMemory()
-                .withClient(clientId)
-                .secret(passwordEncoder.encode(clientSecret))
-                .scopes("read")
-                .authorizedGrantTypes("authorization_code", "password")
-                .autoApprove(true)
-                .redirectUris("http://localhost:8081/user/login/client-app");
+                .jdbc(dataSource)
+                .passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -54,5 +55,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .tokenEnhancer(tokenEnhancer())
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .authenticationManager(authenticationManager);
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security
+                .tokenKeyAccess("permitAll()")
+                .checkTokenAccess("isAuthenticated()");
     }
 }
