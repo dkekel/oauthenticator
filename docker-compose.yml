@@ -1,6 +1,8 @@
-version: '3.1'
+version: '3.7'
 services:
   server:
+    depends_on:
+      - database
     build:
       .
     volumes:
@@ -9,3 +11,19 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://192.168.1.103:5432/gridwars
     ports:
       - 8080:8080
+
+  database:
+    build:
+      context: ../localdb
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: insegur
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9000:8080
