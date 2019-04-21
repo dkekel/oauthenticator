@@ -29,7 +29,7 @@ public class UserController {
 
 
     @PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity registerUser(@Valid @ModelAttribute final RegistrationForm registrationForm,
+    public ResponseEntity registerUser(@Valid @RequestBody final RegistrationForm registrationForm,
                              final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = bindingResult.getAllErrors().stream()
