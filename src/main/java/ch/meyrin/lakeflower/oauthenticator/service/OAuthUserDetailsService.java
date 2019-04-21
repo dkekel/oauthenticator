@@ -44,6 +44,6 @@ public class OAuthUserDetailsService implements UserDetailsManager {
 
     @Override
     public boolean userExists(String username) {
-        return false;
+        return userRepository.findAccountByUsername(username) != null;
     }
 }

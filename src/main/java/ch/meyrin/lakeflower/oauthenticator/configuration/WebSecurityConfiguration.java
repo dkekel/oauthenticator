@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Objects;
@@ -40,10 +41,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http
                 .csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringAntMatchers("/user/register")
                 .ignoringAntMatchers("/*/restart")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/**").permitAll()
+                .antMatchers("/oauth/**", "/user/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/*/restart").permitAll()
                 .antMatchers("/**").authenticated()
