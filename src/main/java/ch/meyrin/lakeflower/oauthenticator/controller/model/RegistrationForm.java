@@ -6,7 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 public class RegistrationForm {
-    @Length(min = 10, max = 16)
+    @Length(min = 4, max = 16)
     private String username;
     @Length(min = 6, max = 32)
     private String password;

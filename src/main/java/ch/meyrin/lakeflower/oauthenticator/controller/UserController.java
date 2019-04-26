@@ -1,10 +1,12 @@
 package ch.meyrin.lakeflower.oauthenticator.controller;
 
 import ch.meyrin.lakeflower.oauthenticator.controller.model.RegistrationForm;
+import ch.meyrin.lakeflower.oauthenticator.entity.user.Account;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -22,11 +24,13 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final transient UserDetailsManager userDetailsManager;
+    private final transient PasswordEncoder passwordEncoder;
 
-    public UserController(@Qualifier("OAuthUserDetailsService") UserDetailsManager userDetailsManager) {
+    public UserController(@Qualifier("OAuthUserDetailsService") final UserDetailsManager userDetailsManager,
+                          final PasswordEncoder passwordEncoder) {
         this.userDetailsManager = userDetailsManager;
+        this.passwordEncoder = passwordEncoder;
     }
-
 
     @PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity registerUser(@Valid @RequestBody final RegistrationForm registrationForm,
@@ -37,7 +41,12 @@ public class UserController {
                     .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
             return new ResponseEntity<Map>(errors, HttpStatus.BAD_REQUEST);
         }
-        return null;
+        Account userDetails = new Account();
+        userDetails.setUsername(registrationForm.getUsername());
+        userDetails.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
+        userDetails.setEmail(registrationForm.getEmail());
+        userDetailsManager.createUser(userDetails);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/checkUser/{username}")
