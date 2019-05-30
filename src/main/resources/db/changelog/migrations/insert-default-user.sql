@@ -1,5 +1,4 @@
-INSERT INTO account (id, username, password, email)
-VALUES (1,
-        'user',
+INSERT INTO account (username, password, email)
+VALUES ('user',
         crypt('password', gen_salt('bf')),
         'd_kekel@gmail.com');

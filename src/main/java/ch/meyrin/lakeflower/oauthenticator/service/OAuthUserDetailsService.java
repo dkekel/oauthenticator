@@ -1,5 +1,6 @@
 package ch.meyrin.lakeflower.oauthenticator.service;
 
+import ch.meyrin.lakeflower.oauthenticator.entity.user.Account;
 import ch.meyrin.lakeflower.oauthenticator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +25,7 @@ public class OAuthUserDetailsService implements UserDetailsManager {
 
     @Override
     public void createUser(UserDetails user) {
-
+        userRepository.save((Account) user);
     }
 
     @Override
@@ -44,6 +45,6 @@ public class OAuthUserDetailsService implements UserDetailsManager {
 
     @Override
     public boolean userExists(String username) {
-        return false;
+        return userRepository.findAccountByUsername(username) != null;
     }
 }
