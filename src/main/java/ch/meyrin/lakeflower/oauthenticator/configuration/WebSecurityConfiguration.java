@@ -39,9 +39,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http
+                .csrf()
+                .ignoringAntMatchers("/*/restart")
+                .and()
                 .authorizeRequests()
                 .antMatchers("/oauth/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/*/restart").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()
                 .formLogin().permitAll()
