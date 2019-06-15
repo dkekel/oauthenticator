@@ -42,6 +42,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     }
 
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        //TODO configure request factory to get scopes from user roles
+        //https://stackoverflow.com/questions/31345466/mapping-user-roles-to-oauth2-scopes-authorities
+        //https://stackoverflow.com/questions/31391607/spring-oauth2-checkuserscopes-is-not-working-as-expected
         clients
                 .inMemory()
                 .withClient(clientId)
