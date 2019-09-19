@@ -41,7 +41,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http
                 .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .ignoringAntMatchers("/user/register")
                 .ignoringAntMatchers("/*/restart")
                 .and()
